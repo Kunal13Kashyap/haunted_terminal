@@ -10,9 +10,10 @@ import {
   Heart,
 } from "lucide-react";
 
-const API_URL = "http://localhost:3000/api/terminal/command";
-const HEALTH_URL = "http://localhost:3000/api/health";
-const MIN_RESPONSE_DELAY = 3000;
+import {
+  API_ENDPOINTS,
+  MIN_RESPONSE_DELAY,
+} from "../config/api.js";
 
 const wait = (ms) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -74,7 +75,19 @@ export default function HauntedTerminal() {
   const [endingChoices, setEndingChoices] = useState(false);
   const [discoveredClues, setDiscoveredClues] = useState([]);
   const [sessionEnded, setSessionEnded] = useState(false);
-  const [sessionId] = useState(() => crypto.randomUUID());
+  const [sessionId, setSessionId] = useState(() => {
+  const savedSessionId = localStorage.getItem("haunted-session-id");
+
+    if (savedSessionId) {
+      return savedSessionId;
+    }
+
+    const newSessionId = crypto.randomUUID();
+
+    localStorage.setItem("haunted-session-id", newSessionId);
+
+    return newSessionId;
+  });
 
   const terminalRef = useRef(null);
   const inputRef = useRef(null);
@@ -93,10 +106,16 @@ export default function HauntedTerminal() {
     ]);
   }
 
-  // Reveal startup messages one at a time.
-  useEffect(() => {
-    const timers = INITIAL_LINES.map((line, index) =>
+// Restore an existing session or initialize a new one.
+useEffect(() => {
+  let active = true;
+  let timers = [];
+
+  function showStartup() {
+    timers = INITIAL_LINES.map((line, index) =>
       window.setTimeout(() => {
+        if (!active) return;
+
         setLines((previous) => [
           ...previous,
           {
@@ -110,9 +129,112 @@ export default function HauntedTerminal() {
         }
       }, 500 + index * 700)
     );
+  }
 
-    return () => timers.forEach(window.clearTimeout);
-  }, []);
+  async function restoreSession() {
+    try {
+      const response = await fetch(
+        API_ENDPOINTS.SESSION(sessionId)
+      );
+
+      if (!active) return;
+
+      // No previous session exists. Start normally.
+      if (response.status === 404) {
+        showStartup();
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error("Could not restore your session.");
+      }
+
+      const data = await response.json();
+      console.log("SESSION RESTORATION DATA:", {
+        sessionId: data.sessionId,
+        status: data.status,
+        ending: data.ending,
+        eventCount: data.events?.length,
+        events: data.events,
+      });
+
+      if (!active) return;
+
+      // Find the most recent clear checkpoint.
+const lastClearIndex = data.events
+  .map((event) => event.type)
+  .lastIndexOf("clear");
+
+// Only restore events that occurred after the last clear.
+const visibleEvents =
+  lastClearIndex === -1
+    ? data.events
+    : data.events.slice(lastClearIndex + 1);
+
+// If the latest event was clear, restore an empty terminal.
+const restoredLines =
+  lastClearIndex !== -1 && visibleEvents.length === 0
+    ? []
+    : [
+        {
+          type: "system",
+          text: "SESSION RESTORED.",
+        },
+        {
+          type: "ghost",
+          text: "You came back.",
+        },
+        ...visibleEvents.map((event) => ({
+          type: event.type,
+          text: event.content,
+        })),
+      ].map((line, index) => ({
+        ...line,
+        id: index,
+      }));
+
+      nextId.current = restoredLines.length;
+
+      // Restore the complete terminal transcript.
+      setLines(restoredLines);
+
+      // Restore discovered clues.
+      setDiscoveredClues(data.discoveredClues ?? []);
+
+      // Restore ending choices when applicable.
+      setEndingChoices(
+        !data.sessionEnded &&
+        data.events.some((event) => event.type === "choice")
+      );
+
+      if (data.sessionEnded) {
+        sessionEndedRef.current = true;
+        setSessionEnded(true);
+      }
+
+      setBooting(false);
+    } catch (error) {
+      if (!active) return;
+
+      console.error("Session restoration failed:", error);
+
+      setLines([{
+        id: nextId.current++,
+        type: "error",
+        text: "Unable to restore your investigation. Check your connection and refresh.",
+      }]);
+
+      setBooting(false);
+    }
+  }
+
+  restoreSession();
+
+  return () => {
+    active = false;
+    timers.forEach(window.clearTimeout);
+  };
+}, [sessionId]);
 
   // Keep the latest terminal output visible.
   useEffect(() => {
@@ -128,7 +250,7 @@ export default function HauntedTerminal() {
 
     async function checkBackend() {
       try {
-        const response = await fetch(HEALTH_URL);
+        const response = await fetch(API_ENDPOINTS.HEALTH);
 
         if (active) {
           setOnline(response.ok);
@@ -149,6 +271,13 @@ export default function HauntedTerminal() {
 
   async function submitCommand(rawCommand) {
     const command = rawCommand.trim();
+    if (command.length > 500) {
+      addLine(
+        "warning",
+        "COMMAND TOO LONG. Maximum allowed length is 500 characters."
+      );
+      return;
+    }
 
     if (
       !command ||
@@ -162,19 +291,13 @@ export default function HauntedTerminal() {
     setInput("");
     addLine("command", `user@haunted:~$ ${command}`);
 
-    // Clear the terminal locally without contacting the backend.
-    if (command.toLowerCase() === "clear") {
-      setLines([]);
-      return;
-    }
-
     loadingRef.current = true;
     setLoading(true);
 
     try {
       const requestStartedAt = Date.now();
 
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_ENDPOINTS.TERMINAL_COMMAND, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -185,12 +308,30 @@ export default function HauntedTerminal() {
         }),
       });
 
-      const data = await response.json();
+      let data;
+
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error(
+          response.ok
+            ? "The server returned an invalid response."
+            : `Server error (${response.status}).`
+        );
+      }
 
       if (!response.ok) {
         throw new Error(
-          data.error || "The machine rejected your command."
+          data.error || `Server error (${response.status}).`
         );
+      }
+
+      if (
+        !data ||
+        typeof data !== "object" ||
+        typeof data.type !== "string"
+      ) {
+        throw new Error("The server returned an unexpected response.");
       }
 
       // Delay predefined responses BEFORE displaying them.
@@ -252,11 +393,20 @@ export default function HauntedTerminal() {
 
       setOnline(true);
     } catch (error) {
+      const isNetworkError =
+        error instanceof TypeError &&
+        error.message.toLowerCase().includes("fetch");
+
       addLine(
         "error",
-        `Connection lost: ${error.message}. Is the backend running?`
+        isNetworkError
+          ? "CONNECTION FAILED. The backend is unreachable. Check whether the API server is running."
+          : `REQUEST FAILED. ${error.message}`
       );
-      setOnline(false);
+
+      if (isNetworkError) {
+        setOnline(false);
+      }
     } finally {
       loadingRef.current = false;
       setLoading(false);
@@ -266,6 +416,30 @@ export default function HauntedTerminal() {
       }
     }
   }
+
+  function startNewGame() {
+  const newSessionId = crypto.randomUUID();
+
+  // Save the new active session.
+  localStorage.setItem("haunted-session-id", newSessionId);
+
+  // Reset the previous gameplay state.
+  setLines([]);
+  setInput("");
+  setDiscoveredClues([]);
+  setEndingChoices(false);
+  setSessionEnded(false);
+  setLoading(false);
+  setBooting(true);
+
+  // Reset session control refs.
+  sessionEndedRef.current = false;
+  loadingRef.current = false;
+  nextId.current = 0;
+
+  // Activate the new session.
+  setSessionId(newSessionId);
+}
 
   function executeCommand(event) {
     event.preventDefault();
@@ -395,7 +569,7 @@ export default function HauntedTerminal() {
                       type="button"
                       disabled={loading}
                       onClick={() => submitCommand(option.id)}
-                      className={`group flex min-h-24 flex-col items-start gap-3 rounded-lg border bg-black/20 p-4 text-left transition duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-50 ${option.style}`}
+                      className={`group flex min-h-24 flex-col items-start gap-3 rounded-lg border bg-black/20 p-4 text-left transition duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-50 ${option.style} cursor-pointer`}
                     >
                       <span className="flex items-center gap-2 text-xs tracking-[0.15em]">
                         <Icon className="h-4 w-4" />
@@ -419,8 +593,18 @@ export default function HauntedTerminal() {
           )}
 
           {sessionEnded && (
-            <div className="border-t border-red-900/40 pt-4 text-xs tracking-widest text-red-400">
-              SESSION CLOSED — REFRESH TO BEGIN AGAIN
+            <div className="flex flex-col gap-4 border-t border-red-900/40 pt-4">
+              <p className="text-xs tracking-widest text-red-400">
+                SESSION CLOSED — INVESTIGATION COMPLETE
+              </p>
+
+              <button
+                type="button"
+                onClick={startNewGame}
+                className="w-fit rounded border border-emerald-800 px-4 py-2 text-xs tracking-widest text-emerald-300 transition hover:border-emerald-400 hover:bg-emerald-950/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 cursor-pointer"
+              >
+                NEW GAME
+              </button>
             </div>
           )}
         </div>
@@ -437,6 +621,8 @@ export default function HauntedTerminal() {
               ref={inputRef}
               value={input}
               onChange={(event) => setInput(event.target.value)}
+              maxLength={500}
+              aria-describedby="command-limit"
               disabled={inputDisabled}
               autoComplete="off"
               spellCheck={false}
@@ -453,10 +639,17 @@ export default function HauntedTerminal() {
               className="min-w-0 flex-1 bg-transparent text-emerald-100 outline-none placeholder:text-zinc-600 disabled:opacity-50"
             />
 
+            <p
+              id="command-limit"
+              className="mt-2 text-[10px] text-zinc-600"
+            >
+              {input.length}/500 characters
+            </p>
+
             <button
               type="submit"
               disabled={inputDisabled || !input.trim()}
-              className="rounded border border-emerald-800 px-3 py-1.5 text-xs text-emerald-300 transition hover:bg-emerald-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded border border-emerald-800 px-3 py-1.5 text-xs text-emerald-300 transition hover:bg-emerald-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
             >
               EXECUTE
             </button>

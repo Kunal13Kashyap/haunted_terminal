@@ -1,2 +1,29 @@
-node_modules
+
+# Dependencies
+node_modules/
+
+# Environment variables
 .env
+.env.*
+!.env.example
+
+# SQLite database files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# SQLite WAL and shared-memory files
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
+
+# Generated Prisma Client
+src/generated/prisma/
+
+# Test files
+test-message-repository.js
+test-prisma.js
+test-session-repository.js
+test-clue-repository.js

@@ -1,0 +1,61 @@
+
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  moduleFormat           = "esm"
+  runtime                = "nodejs"
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Session {
+  id        String   @id
+  status    String   @default("ACTIVE")
+  ending    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  endedAt   DateTime?
+
+  messages ConversationMessage[]
+  clues    DiscoveredClue[]
+  events   TerminalEvent[]
+}
+
+model ConversationMessage {
+  id        Int      @id @default(autoincrement())
+  sessionId String
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, id])
+}
+
+model DiscoveredClue {
+  id           Int      @id @default(autoincrement())
+  sessionId    String
+  clueId       String
+  discoveredAt DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, clueId])
+}
+
+model TerminalEvent {
+  id        Int      @id @default(autoincrement())
+  sessionId String
+  type      String
+  content   String
+  createdAt DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, id])
+}

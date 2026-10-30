@@ -1,13 +1,21 @@
-
 import { story } from "../data/story.js";
 import { generateGhostResponse } from "./ollama.service.js";
+import { saveTerminalEvent } from "../repositories/terminal-event.repository.js";
 
-const sessions = new Map();
-const MIN_RESPONSE_DELAY = 3000;
+import { getOrCreateSession, updateSession } from "../repositories/session.repository.js";
+import {
+  saveConversationTurn,
+  getRecentMessages,
+} from "../repositories/message.repository.js";
+import {
+  saveDiscoveredClue,
+  getDiscoveredClueIds,
+} from "../repositories/clue.repository.js";
+import { env } from "../config/env.js";
 
 function waitForMinimumDelay(startTime) {
   const elapsed = Date.now() - startTime;
-  const remaining = MIN_RESPONSE_DELAY - elapsed;
+  const remaining = env.MIN_RESPONSE_DELAY - elapsed;
 
   if (remaining > 0) {
     return new Promise((resolve) => setTimeout(resolve, remaining));
@@ -16,17 +24,21 @@ function waitForMinimumDelay(startTime) {
   return Promise.resolve();
 }
 
-function getSession(sessionId) {
-  if (!sessions.has(sessionId)) {
-    sessions.set(sessionId, {
-      clues: [],
-      history: [],
-      ended: false,
-      ending: null,
-    });
-  }
+// Load the complete gameplay state from SQLite.
+async function loadSession(sessionId) {
+  const record = await getOrCreateSession(sessionId);
 
-  return sessions.get(sessionId);
+  const [clues, history] = await Promise.all([
+    getDiscoveredClueIds(sessionId),
+    getRecentMessages(sessionId, 8),
+  ]);
+
+  return {
+    clues,
+    history,
+    ended: record.status !== "ACTIVE",
+    ending: record.ending,
+  };
 }
 
 function getEvidence(session) {
@@ -40,7 +52,7 @@ function missingRequirements(session, requirements = []) {
   return requirements.filter((id) => !session.clues.includes(id));
 }
 
-function discoverClue(session, clue) {
+async function discoverClue(sessionId, session, clue) {
   if (session.clues.includes(clue.id)) {
     return {
       type: "clue",
@@ -49,6 +61,9 @@ function discoverClue(session, clue) {
       output: `[ALREADY RECOVERED] ${clue.title}\n\n${clue.message}`,
     };
   }
+
+  // Persist before returning the successful discovery response.
+  await saveDiscoveredClue(sessionId, clue.id);
 
   session.clues.push(clue.id);
 
@@ -98,7 +113,19 @@ function getGuardedResponse(command, session) {
   return null;
 }
 
-export async function processCommand(command, sessionId) {
+async function persistConversation(session, sessionId, command, answer) {
+  await saveConversationTurn(sessionId, command, answer);
+
+  session.history.push(
+    { role: "user", content: command },
+    { role: "assistant", content: answer }
+  );
+
+  // Keep only the most recent eight messages in working memory.
+  session.history = session.history.slice(-8);
+}
+
+async function processCommandInternal(command, sessionId) {
   const normalized = command.trim().toLowerCase();
 
   if (!normalized) {
@@ -108,7 +135,7 @@ export async function processCommand(command, sessionId) {
     };
   }
 
-  const session = getSession(sessionId);
+  const session = await loadSession(sessionId);
 
   if (session.ended) {
     return {
@@ -150,7 +177,10 @@ export async function processCommand(command, sessionId) {
   }
 
   if (normalized === "exit") {
-    session.ended = true;
+    await updateSession(sessionId, {
+      status: "ENDED",
+      endedAt: new Date(),
+    });
 
     return {
       type: "system",
@@ -175,7 +205,7 @@ export async function processCommand(command, sessionId) {
       };
     }
 
-    return discoverClue(session, clue);
+    return discoverClue(sessionId, session, clue);
   }
 
   if (normalized === "reveal") {
@@ -226,6 +256,12 @@ export async function processCommand(command, sessionId) {
       };
     }
 
+    await updateSession(sessionId, {
+      status: "ENDED",
+      ending: normalized,
+      endedAt: new Date(),
+    });
+
     session.ending = normalized;
     session.ended = true;
 
@@ -246,9 +282,11 @@ export async function processCommand(command, sessionId) {
     if (guardedResponse) {
       await waitForMinimumDelay(requestStartedAt);
 
-      session.history.push(
-        { role: "user", content: command },
-        { role: "assistant", content: guardedResponse }
+      await persistConversation(
+        session,
+        sessionId,
+        command,
+        guardedResponse
       );
 
       return {
@@ -266,9 +304,11 @@ export async function processCommand(command, sessionId) {
       history: session.history.slice(-8),
     });
 
-    session.history.push(
-      { role: "user", content: command },
-      { role: "assistant", content: answer }
+    await persistConversation(
+      session,
+      sessionId,
+      command,
+      answer
     );
 
     return {
@@ -283,4 +323,44 @@ export async function processCommand(command, sessionId) {
     type: "error",
     output: `UNKNOWN COMMAND: ${command}\nType "help" to inspect available commands.`,
   };
+}
+
+export async function processCommand(command, sessionId) {
+  const trimmedCommand = command.trim();
+
+  if (!trimmedCommand) {
+    return processCommandInternal(command, sessionId);
+  }
+
+  // Execute the deterministic story engine first.
+  const result = await processCommandInternal(
+    command,
+    sessionId
+  );
+
+  // Terminal logging must not invalidate successful gameplay.
+  try {
+    await saveTerminalEvent(
+      sessionId,
+      "command",
+      `user@haunted:~$ ${trimmedCommand}`
+    );
+
+    if (result.type === "clear") {
+      await saveTerminalEvent(sessionId, "clear", "");
+    } else if (result.output) {
+      await saveTerminalEvent(
+        sessionId,
+        result.type || "system",
+        result.output
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Terminal event persistence failed:",
+      error
+    );
+  }
+
+  return result;
 }

@@ -1,8 +1,19 @@
+import { Ollama } from "ollama";
+import { env } from "../config/env.js";
 
-import ollama from "ollama";
+const ollama = new Ollama({
+  host: env.OLLAMA_HOST,
+});
 
-const MODEL = "qwen2.5:3b";
-const MAX_RESPONSE_WORDS = 65;
+const MODEL = env.OLLAMA_MODEL;
+const MAX_RESPONSE_WORDS = env.MAX_RESPONSE_WORDS;
+
+export class OllamaServiceError extends Error {
+  constructor(message, cause) {
+    super(message, { cause });
+    this.name = "OllamaServiceError";
+  }
+}
 
 function getDiscoveredClueIds(evidence = "") {
   const ids = new Set();
@@ -253,20 +264,29 @@ ${command}
 Answer directly, stay in character, and respect the established facts.
 `.trim();
 
-  const response = await ollama.chat({
-    model: MODEL,
-    messages: [
-      { role: "system", content: systemPrompt },
-      ...safeHistory,
-      { role: "user", content: userPrompt },
-    ],
-    options: {
-      num_gpu: 0,
-      temperature: 0.35,
-      num_predict: 90,
-      repeat_penalty: 1.2,
-    },
-  });
+  let response;
+
+  try {
+    response = await ollama.chat({
+      model: MODEL,
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...safeHistory,
+        { role: "user", content: userPrompt },
+      ],
+      options: {
+        num_gpu: 0,
+        temperature: 0.35,
+        num_predict: 90,
+        repeat_penalty: 1.2,
+      },
+    });
+  } catch (error) {
+    throw new OllamaServiceError(
+      "Ollama failed to generate a response.",
+      error
+    );
+  }
 
   const answer = response.message?.content?.trim();
 
