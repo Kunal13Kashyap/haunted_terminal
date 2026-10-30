@@ -1,0 +1,373 @@
+@import "tailwindcss";
+
+/* Haunted Terminal scrollbar */
+.terminal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #28583f #0b0e0c;
+}
+
+.terminal-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.terminal-scroll::-webkit-scrollbar-track {
+  background: #0b0e0c;
+}
+
+.terminal-scroll::-webkit-scrollbar-thumb {
+  background: #28583f;
+  border: 2px solid #0b0e0c;
+  border-radius: 999px;
+}
+
+.terminal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #34d399;
+}
+
+.terminal-scroll::-webkit-scrollbar-corner {
+  background: #0b0e0c;
+}
+
+/* Haunted Terminal — atmospheric effects */
+
+.terminal-screen {
+  position: relative;
+  isolation: isolate;
+}
+
+.terminal-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.12;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.28) 4px
+  );
+}
+
+.terminal-glow {
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.16);
+}
+
+@keyframes terminal-flicker {
+  0%, 100% { opacity: 1; }
+  96% { opacity: 0.98; }
+  97% { opacity: 0.94; }
+  98% { opacity: 1; }
+}
+
+.terminal-flicker {
+  animation: terminal-flicker 7s linear infinite;
+}
+
+@keyframes boot-line {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.boot-line {
+  animation: boot-line 450ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal-flicker,
+  .boot-line {
+    animation: none !important;
+  }
+}
+
+/* A brief emphasis when new evidence is recovered */
+@keyframes clue-recovered {
+  0% {
+    background: rgba(245, 158, 11, 0.14);
+    box-shadow: -3px 0 0 rgba(245, 158, 11, 0.8);
+  }
+
+  100% {
+    background: transparent;
+    box-shadow: -3px 0 0 transparent;
+  }
+}
+
+.clue-recovered {
+  padding-left: 10px;
+  animation: clue-recovered 1.4s ease-out both;
+}
+
+/* The final decision gets its own visual treatment */
+@keyframes ending-reveal {
+  0% {
+    border-left-color: rgba(167, 139, 250, 0);
+    background: rgba(139, 92, 246, 0);
+  }
+
+  100% {
+    border-left-color: rgba(167, 139, 250, 0.8);
+    background: rgba(139, 92, 246, 0.07);
+  }
+}
+
+.ending-reveal {
+  padding: 10px 12px;
+  border-left: 2px solid rgba(167, 139, 250, 0.8);
+  animation: ending-reveal 900ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clue-recovered,
+  .ending-reveal {
+    animation: none;
+  }
+}
+
+
+/* =========================================
+   HAUNTED TERMINAL — GHOST IN THE MACHINE
+   Ambient environment
+   ========================================= */
+
+.haunted-page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse at 50% 45%,
+      rgba(0, 100, 65, 0.16),
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse at 8% 18%,
+      rgba(0, 180, 110, 0.08),
+      transparent 35%
+    ),
+    radial-gradient(
+      ellipse at 92% 82%,
+      rgba(20, 90, 70, 0.09),
+      transparent 38%
+    ),
+    #050706;
+}
+
+/* Slow-moving, ghostly light */
+.haunted-page::before {
+  content: "";
+  position: fixed;
+  inset: -30%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at 25% 35%,
+      rgba(16, 185, 129, 0.12),
+      transparent 24%
+    ),
+    radial-gradient(
+      ellipse at 75% 60%,
+      rgba(5, 150, 105, 0.10),
+      transparent 27%
+    ),
+    radial-gradient(
+      ellipse at 50% 90%,
+      rgba(34, 197, 94, 0.055),
+      transparent 30%
+    );
+  filter: blur(45px);
+  animation: ghost-drift 16s ease-in-out infinite alternate;
+}
+
+/* Technical grid, CRT lines and edge darkness */
+.haunted-page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 3px,
+      rgba(0, 0, 0, 0.16) 4px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.35),
+      transparent 16%,
+      transparent 84%,
+      rgba(0, 0, 0, 0.35)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 79px,
+      rgba(52, 211, 153, 0.025) 80px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 79px,
+      rgba(52, 211, 153, 0.025) 80px
+    );
+  opacity: 0.65;
+}
+
+/* Occasional interference across the environment */
+.haunted-page {
+  animation: signal-instability 13s linear infinite;
+}
+
+@keyframes ghost-drift {
+  0% {
+    transform: translate3d(-2%, -1%, 0) scale(0.98);
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate3d(2%, 2%, 0) scale(1.04);
+    opacity: 0.7;
+  }
+}
+
+@keyframes signal-instability {
+  0%, 96%, 100% {
+    filter: none;
+  }
+
+  96.2% {
+    filter: brightness(1.04);
+  }
+
+  96.4% {
+    filter: brightness(0.97);
+  }
+
+  96.6% {
+    filter: none;
+  }
+}
+
+/* A restrained arrival when the terminal appears */
+.terminal-screen {
+  animation:
+    terminal-arrival 1s cubic-bezier(0.16, 1, 0.3, 1) both,
+    terminal-flicker 7s linear infinite;
+}
+
+@keyframes terminal-arrival {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Accessibility: remove ambient motion when requested */
+@media (prefers-reduced-motion: reduce) {
+  .haunted-page,
+  .haunted-page::before,
+  .terminal-screen {
+    animation: none !important;
+    filter: none !important;
+    transform: none !important;
+  }
+}
+
+
+/* Slow, breathing green light */
+.haunted-page::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 20% 25%,
+      rgba(16, 185, 129, 0.09),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(5, 150, 105, 0.08),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 55% 10%,
+      rgba(34, 197, 94, 0.045),
+      transparent 25%
+    );
+  filter: blur(30px);
+  animation: haunted-ambient 12s ease-in-out infinite alternate;
+}
+
+/* Faint technical grid and scan lines */
+.haunted-page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.16;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 49px,
+      rgba(16, 185, 129, 0.09) 50px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 49px,
+      rgba(16, 185, 129, 0.07) 50px
+    );
+  mask-image: radial-gradient(
+    ellipse at center,
+    black 0%,
+    transparent 80%
+  );
+}
+
+@keyframes haunted-ambient {
+  0% {
+    transform: translate3d(-1%, -1%, 0) scale(0.98);
+    opacity: 0.65;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate3d(1%, 1%, 0) scale(1.04);
+    opacity: 0.8;
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .haunted-page::before {
+    animation: none;
+  }
+}
