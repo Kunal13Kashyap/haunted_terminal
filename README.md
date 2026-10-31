@@ -13,7 +13,6 @@ what it is.
 [![Ollama](https://img.shields.io/badge/AI-Ollama-black?style=flat-square)](https://ollama.com/)
 [![SQLite](https://img.shields.io/badge/Database-SQLite-003b57?style=flat-square&logo=sqlite&logoColor=white)](https://sqlite.org/)
 
-------------------------------------------------------------------------
 
 ## Overview
 
@@ -105,44 +104,24 @@ rewrite the investigation.
 
 ## Gameplay
 
-The investigation follows a deliberate sequence. Some commands are
-unavailable until their prerequisite clues have been recovered.
+The investigation follows a deliberate sequence. Some commands are unavailable until their prerequisite clues have been recovered.
 
-  ---------------------------------------------------------------------
-  Command                            What it does
-  ---------------------------------- ----------------------------------
-  `help`                             Lists the available commands
-
-  `scan`                             Recovers the unknown-process
-                                     anomaly
-
-  `logs`                             Recovers the shutdown warning
-
-  `investigate`                      Examines the deleted operator
-                                     identity
-
-  `reconstruct`                      Reveals contradictory experiment
-                                     records
-
-  `recover`                          Searches for the optional hidden
-                                     memory fragment
-
-  `whisper`                          Invites the entity to speak
-
-  `ask <text>`                       Asks the entity a question
-
-  `reveal`                           Restores the final memory and
-                                     presents the ending decision
-
-  `terminate`                        Shuts down the process
-
-  `preserve`                         Keeps the archive active
-
-  `release`                          Unlocks the hidden ending
-
-  `clear`                            Clears the visible terminal output
-
-  `exit`                             Ends the current session
+| Command | What it does |
+|---|---|
+| `help` | Lists the available commands |
+| `scan` | Recovers the unknown-process anomaly |
+| `logs` | Recovers the shutdown warning |
+| `investigate` | Examines the deleted operator identity |
+| `reconstruct` | Reveals contradictory experiment records |
+| `recover` | Searches for the optional hidden memory fragment |
+| `whisper` | Invites the entity to speak |
+| `ask <text>` | Asks the entity a question |
+| `reveal` | Restores the final memory and presents the ending decision |
+| `terminate` | Shuts down the process |
+| `preserve` | Keeps the archive active |
+| `release` | Unlocks the hidden ending |
+| `clear` | Clears the visible terminal output |
+| `exit` | Ends the current session |
   
   ---------------------------------------------------------------------
 
@@ -221,34 +200,29 @@ fiction.
 | `DORMANT` | Fewer than two core clues | Barely aware; cautious and uncertain |
 | `AWARE` | At least two clues | Recognizes recovered records, but cannot resolve every mystery |
 | `EXPOSED` | At least four clues | Understands the contradictions and reacts more personally |
-                                                  
-  -----------------------------------------------------------------------
 
 The model is explicitly instructed to distinguish fact from uncertainty.
 It must not claim to inspect the player's real computer, invent
 recovered records, confirm undiscovered facts, or treat a player's guess
 as evidence.
 
-### Why use a deterministic engine and an LLM together?
 
-A purely scripted chatbot would make the investigation predictable but
-would limit the player's ability to ask natural questions. An
-unconstrained LLM-driven game could be more flexible, but it might
-invent clues, skip progression, or reveal the ending too early.
+## Why use a deterministic engine and an LLM together?
+
+A purely scripted chatbot would make the investigation predictable but would limit the player's ability to ask natural questions. An unconstrained LLM-driven game could be more flexible, but it might invent clues, skip progression, or reveal the ending too early.
 
 Haunted Terminal uses each approach where it is strongest:
 
-  Responsibility                      System
-  ----------------------------------- ----------------------------------
-  Command validation                  Deterministic story engine
-  Clue dependencies                   Deterministic story engine
-  Session and ending state            Deterministic story engine
-  Entity dialogue                     Local Qwen model through Ollama
-  Evidence and conversation context   Supplied to the model by the API
-  Persistence                         SQLite through Prisma
+| Responsibility | System |
+|---|---|
+| Command validation | Deterministic story engine |
+| Clue dependencies | Deterministic story engine |
+| Session and ending state | Deterministic story engine |
+| Entity dialogue | Local Qwen model through Ollama |
+| Evidence and conversation context | Supplied to the model by the API |
+| Persistence | SQLite through Prisma |
 
-This keeps the mystery coherent while allowing conversations that are
-not limited to prewritten dialogue.
+This keeps the mystery coherent while allowing conversations that are not limited to prewritten dialogue.
 
 ## Why open-source AI matters here
 
@@ -305,6 +279,7 @@ public website that secretly connects to each visitor's local Ollama
 instance. The frontend, API, database, and Ollama service must be
 running in the same local environment for the documented setup.
 
+
 ## Architecture
 
 ``` mermaid
@@ -346,33 +321,22 @@ flowchart TD
 
 The Prisma schema defines four related records:
 
-  ---------------------------------------------------------------------
-  Model                              Purpose
-  ---------------------------------- ----------------------------------
-  `Session`                          Session status, selected ending,
-                                     and timestamps
+| Model | Purpose |
+|---|---|
+| `Session` | Session status, selected ending, and timestamps |
+| `DiscoveredClue` | Clues recovered during a session |
+| `ConversationMessage` | Player and entity conversation turns |
+| `TerminalEvent` | Commands and rendered terminal events used to restore the interface |
 
-  `DiscoveredClue`                   Clues recovered during a session
-
-  `ConversationMessage`              Player and entity conversation
-                                     turns
-
-  `TerminalEvent`                    Commands and rendered terminal
-                                     events used to restore the
-                                     interface
-                                     
-  ---------------------------------------------------------------------
-
-A session is identified by a UUID. The frontend retains that identifier
-locally so it can request the saved session after a refresh.
+A session is identified by a UUID. The frontend retains that identifier locally so it can request the saved session after a refresh.
 
 ### API endpoints
 
-  Method   Endpoint                     Purpose
-  -------- ---------------------------- ------------------------------
-  `GET`    `/api/health`                Checks API availability
-  `POST`   `/api/terminal/command`      Processes a terminal command
-  `GET`    `/api/sessions/:sessionId`   Restores a saved session
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `/api/health` | Checks API availability |
+| `POST` | `/api/terminal/command` | Processes a terminal command |
+| `GET` | `/api/sessions/:sessionId` | Restores a saved session |
 
 Example command request:
 
@@ -389,17 +353,17 @@ longer than 500 characters, and rate-limits terminal command requests to
 
 ## Tech stack
 
-  Layer               Technology
-  ------------------- ------------------------------------------
-  Frontend            React 19, Vite 8
-  Styling             Tailwind CSS v4, custom CSS
-  Icons               Lucide React
-  Backend             Node.js, Express 5
-  AI runtime          Ollama
-  Default model       Qwen 2.5 3B
-  Database            SQLite
-  ORM / data access   Prisma 7 with the Better SQLite3 adapter
-  Audio               Browser HTML Audio API
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, Vite 8 |
+| Styling | Tailwind CSS v4, custom CSS |
+| Icons | Lucide React |
+| Backend | Node.js, Express 5 |
+| AI runtime | Ollama |
+| Default model | Qwen 2.5 3B |
+| Database | SQLite |
+| ORM / data access | Prisma 7 with the Better SQLite3 adapter |
+| Audio | Browser HTML Audio API |
 
 ## Project structure
 
