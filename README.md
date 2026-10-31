@@ -1,152 +1,461 @@
-# 👻 Haunted Terminal — Infrastructure #674
+::: {align="center"}
+# 👻 Haunted Terminal
 
-> **The process was terminated. So why is it still running?**
+### INFRASTRUCTURE #674 --- The Last Process
 
-Haunted Terminal is an interactive, horror-themed terminal experience built around an abandoned memory-preservation experiment. Investigate a forgotten system, recover corrupted records, question an AI reconstructed from fragmented memories, and decide what should happen to the entity living inside the machine.
+**The process was terminated. So why is it still running?**
 
-Built for **Hacktoberfest 2026 — Week 4: Ghost in the Machine**, the project explores how open-source AI can become an essential part of an interactive experience.
+An interactive, AI-powered horror experience about a forgotten
+experiment, fragmented memories, and an entity that may not understand
+what it is.
 
----
+[![Hacktoberfest
+2026](https://img.shields.io/badge/Hacktoberfest-2026-orange?style=flat-square)](https://dev.to/challenges/hacktoberfest-week4-2026-10-26)
+[![Week
+4](https://img.shields.io/badge/DEV_Challenge-Week_4-7c3aed?style=flat-square)](https://dev.to/challenges/hacktoberfest-week4-2026-10-26)
+[![React](https://img.shields.io/badge/React-19-149eca?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-ESM-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Ollama](https://img.shields.io/badge/AI-Ollama-black?style=flat-square)](https://ollama.com/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-003b57?style=flat-square&logo=sqlite&logoColor=white)](https://sqlite.org/)
+:::
 
-## The Experience
+------------------------------------------------------------------------
+
+## The experience
 
 An abandoned computer has awakened.
 
-One process remains active, consuming memory despite having no recorded owner, executable, or start time.
+One process is still consuming memory, even though its start time,
+executable, and owner are missing. The system's records contradict one
+another. A deleted operator profile points to Dr. Elian Voss, a
+memory-preservation researcher who died before completing an experiment.
 
-As you investigate, you uncover deleted identities, contradictory instructions, and fragments of an unfinished experiment involving Dr. Elian Voss, a memory-preservation researcher.
+Something inside the archive can answer questions.
 
-Something inside the archive can speak.
+It speaks as though it remembers being someone. But the records suggest
+that the system was never designed to preserve a complete person ---
+only fragments of memory.
 
-But is it a person, a reconstruction, or merely a collection of memories that has learned to believe it is alive?
+You are not here to run commands on your own computer. You are here to
+investigate **Infrastructure #674**, recover what the machine remembers,
+and decide what should happen to the process.
 
-Your investigation determines its fate.
+> Is preserving someone's memories the same as preserving the person?
 
----
+## Screenshots
 
-## Features
+The interface is designed as a fictional CRT workstation: a
+phosphor-green terminal, a physical keyboard, restrained warning colors,
+subtle entity eyes, and ambient horror audio.
 
-### 🖥️ An immersive terminal interface
-- Retro CRT-inspired workstation design.
-- Phosphor-green terminal typography and analog scanline effects.
-- Animated entity eyes inside the monitor.
-- Physical keyboard visualization with real keyboard-press feedback.
-- Responsive layout for different screen sizes.
+```{=html}
+<p align="center">
+```
+`<img src="docs/screenshots/01-boot-sequence.png" alt="Haunted Terminal boot sequence showing Infrastructure 674 and the unauthorized access warning" width="100%">`{=html}
+`<em>`{=html}System initialization --- the entity is already
+inside.`</em>`{=html}
 
-### 👁️ An AI-powered entity
-- Powered by an open-weight language model through [Ollama](https://ollama.com/).
-- The AI responds as the reconstructed entity inside the archive.
-- Its personality evolves as the player discovers evidence.
-- Responses are grounded in recovered clues and conversation history.
-- The AI is instructed to distinguish established facts from uncertainty rather than inventing story revelations.
+```{=html}
+</p>
+```
+```{=html}
+<p align="center">
+```
+`<img src="docs/screenshots/02-terminal-and-command-help.png" alt="Haunted Terminal command help and investigation interface" width="100%">`{=html}
+`<em>`{=html}The terminal is the interface to the
+investigation.`</em>`{=html}
 
-### 🔍 Deterministic investigation system
-- Discover clues through terminal commands.
-- Unlock evidence in a defined progression.
-- Recover hidden information.
-- Reveal the final decision only after meeting the required conditions.
+```{=html}
+</p>
+```
+```{=html}
+<p align="center">
+```
+`<img src="docs/screenshots/03-scan-and-entity-response.png" alt="The player recovers the unknown process clue and receives a response from the entity" width="100%">`{=html}
+`<em>`{=html}The first anomaly is recovered. The entity begins to
+respond.`</em>`{=html}
 
-### 💾 Persistent investigation sessions
-- SQLite-backed session storage using Prisma.
-- Persisted discovered clues, conversation messages, and terminal events.
-- Session restoration after refreshing the frontend.
-- Multiple investigation sessions identified by unique session IDs.
+```{=html}
+</p>
+```
+```{=html}
+<p align="center">
+```
+`<img src="docs/screenshots/04-investigation-clue-gating.png" alt="An investigation command is blocked until the required shutdown log clue is recovered" width="100%">`{=html}
+`<em>`{=html}Progression is evidence-gated: the records must be
+recovered in order.`</em>`{=html}
 
-### 🔊 Ambient horror audio
-- Atmospheric MP3 recordings.
-- Visitor-controlled audio playback.
-- Independent audio layers with smooth volume transitions.
-- No automatic audio playback before visitor interaction.
+```{=html}
+</p>
+```
+```{=html}
+<p align="center">
+```
+`<img src="docs/screenshots/05-preserve-ending.png" alt="Preservation ending: the archive remains active and the investigation closes" width="100%">`{=html}
+`<em>`{=html}Preserve --- the archive remains active.`</em>`{=html}
 
-### ⚖️ Three possible endings
-- **TERMINATION** — Shut down the process.
-- **PRESERVATION** — Keep the archive alive.
-- **RELEASE** — Free the process from its unfinished task. This hidden ending requires an additional recovered memory.
+```{=html}
+</p>
+```
+```{=html}
+<p align="center">
+```
+`<img src="docs/screenshots/06-terminate-ending.png" alt="Termination ending: the process shuts down and the investigation closes" width="100%">`{=html}
+`<em>`{=html}Terminate --- nothing answers from the other side of the
+cursor.`</em>`{=html}
 
----
+```{=html}
+</p>
+```
+## What makes it interactive?
+
+Haunted Terminal combines two deliberately different systems:
+
+-   **A deterministic narrative engine** controls commands, clue
+    requirements, session state, and endings. Story-critical progression
+    does not depend on an LLM deciding what happens next.
+-   **A locally run open-weight language model** gives the entity a
+    conversational voice. Its responses are conditioned on recovered
+    evidence and a short conversation history.
+
+This separation is central to the design. The model can make the entity
+feel responsive, but it cannot invent a clue, unlock an ending, or
+rewrite the investigation.
+
+### Features
+
+-   **CRT-inspired workstation:** responsive terminal UI, animated eyes,
+    phosphor-green styling, and a visual keyboard with physical key
+    feedback.
+-   **Command-driven investigation:** discover records, follow
+    dependencies, and unlock the final decision.
+-   **Conversational entity:** question the reconstructed intelligence
+    using `whisper` or `ask <text>`.
+-   **Evidence-aware responses:** the model receives only recovered
+    story evidence and recent conversation context.
+-   **Three endings:** termination, preservation, and a hidden release
+    ending.
+-   **Persistent sessions:** SQLite stores session state, discovered
+    clues, conversation messages, and terminal events.
+-   **Session restoration:** refresh the frontend and return to the
+    saved investigation.
+-   **Ambient horror audio:** two looping audio layers, started only
+    after the visitor enables audio; playback fades in and out.
+-   **Guardrails:** player input is interpreted by the game's command
+    engine. It is never executed as an operating-system command.
 
 ## Gameplay
 
-Interact with the terminal using commands.
+The investigation follows a deliberate sequence. Some commands are
+unavailable until their prerequisite clues have been recovered.
 
-| Command | Description |
-|---|---|
-| `help` | Display available commands |
-| `scan` | Detect the unknown process |
-| `logs` | Recover the shutdown warning |
-| `investigate` | Examine the deleted identity |
-| `reconstruct` | Compare contradictory records |
-| `recover` | Search for the hidden memory |
-| `whisper` | Listen to the entity |
-| `ask <text>` | Ask the entity a question |
-| `reveal` | Restore the final memory and unlock the decision |
-| `terminate` | Shut down the process |
-| `preserve` | Keep the archive alive |
-| `release` | Unlock the hidden ending |
-| `clear` | Clear terminal output |
-| `exit` | End the current session |
+  ---------------------------------------------------------------------
+  Command                            What it does
+  ---------------------------------- ----------------------------------
+  `help`                             Lists the available commands
 
-**Note:** Some investigation commands require earlier clues to be recovered. The hidden ending also has an additional requirement.
+  `scan`                             Recovers the unknown-process
+                                     anomaly
 
----
+  `logs`                             Recovers the shutdown warning
+
+  `investigate`                      Examines the deleted operator
+                                     identity
+
+  `reconstruct`                      Reveals contradictory experiment
+                                     records
+
+  `recover`                          Searches for the optional hidden
+                                     memory fragment
+
+  `whisper`                          Invites the entity to speak
+
+  `ask <text>`                       Asks the entity a question
+
+  `reveal`                           Restores the final memory and
+                                     presents the ending decision
+
+  `terminate`                        Shuts down the process
+
+  `preserve`                         Keeps the archive active
+
+  `release`                          Unlocks the hidden ending
+
+  `clear`                            Clears the visible terminal output
+
+  `exit`                             Ends the current session
+  ---------------------------------------------------------------------
+
+### The investigation path
+
+``` text
+                 ┌──────────────┐
+                 │     scan     │
+                 │ Unknown      │
+                 │ process      │
+                 └──────┬───────┘
+                        │
+                 ┌──────▼───────┐
+                 │     logs     │
+                 │ Shutdown     │
+                 │ warning      │
+                 └──────┬───────┘
+                        │
+                 ┌──────▼───────┐
+                 │  investigate │
+                 │ Deleted      │
+                 │ identity     │
+                 └──────┬───────┘
+                        │
+                 ┌──────▼───────┐
+                 │ reconstruct  │
+                 │ Contradictory│
+                 │ records      │
+                 └──────┬───────┘
+                        │
+              ┌─────────▼─────────┐
+              │      reveal       │
+              │ Final decision    │
+              └─────┬─────┬───────┘
+                    │     │
+          ┌─────────┘     └──────────┐
+          ▼                          ▼
+     terminate                    preserve
+
+       recover (optional hidden memory)
+                    │
+                    ▼
+                 release
+```
+
+The first four clues are required to reveal the ending choices.
+`recover` discovers an optional fifth clue; that hidden fragment is
+specifically required for `release`. The other two endings remain
+available without it.
+
+**A note about `exit`:** this ends the current session. It is not one of
+the three story endings.
+
+## How the AI works
+
+The entity is powered by **Qwen 2.5 3B** through
+[Ollama](https://ollama.com/). Ollama runs as a local model service; the
+Express API calls it when the player uses `whisper` or `ask`.
+
+The model is not the game engine. The application supplies a system
+prompt containing:
+
+-   The entity's character and conversational constraints.
+-   Its current awareness stage, derived from recovered clues.
+-   The exact evidence discovered in the current session.
+-   Up to the eight most recent conversation messages.
+
+The application also constrains the generated response length and
+sanitizes a small set of generic assistant phrases that would break the
+fiction.
+
+### Three awareness stages
+
+  -----------------------------------------------------------------------
+  Stage                   Trigger                 Behaviour
+  ----------------------- ----------------------- -----------------------
+  `DORMANT`               Fewer than two core     Barely aware; cautious
+                          clues                   and uncertain
+
+  `AWARE`                 At least two clues      Recognizes recovered
+                                                  records, but cannot
+                                                  resolve every mystery
+
+  `EXPOSED`               At least four clues     Understands the
+                                                  contradictions and
+                                                  reacts more personally
+  -----------------------------------------------------------------------
+
+The model is explicitly instructed to distinguish fact from uncertainty.
+It must not claim to inspect the player's real computer, invent
+recovered records, confirm undiscovered facts, or treat a player's guess
+as evidence.
+
+### Why use a deterministic engine and an LLM together?
+
+A purely scripted chatbot would make the investigation predictable but
+would limit the player's ability to ask natural questions. An
+unconstrained LLM-driven game could be more flexible, but it might
+invent clues, skip progression, or reveal the ending too early.
+
+Haunted Terminal uses each approach where it is strongest:
+
+  Responsibility                      System
+  ----------------------------------- ----------------------------------
+  Command validation                  Deterministic story engine
+  Clue dependencies                   Deterministic story engine
+  Session and ending state            Deterministic story engine
+  Entity dialogue                     Local Qwen model through Ollama
+  Evidence and conversation context   Supplied to the model by the API
+  Persistence                         SQLite through Prisma
+
+This keeps the mystery coherent while allowing conversations that are
+not limited to prewritten dialogue.
+
+## Why open-source AI matters here
+
+The theme of **Ghost in the Machine** is not just a visual aesthetic. It
+is also the technical premise: an intelligence reconstructed from
+fragments, running on infrastructure that can be inspected and
+controlled.
+
+Using an open-weight model with local inference changes the project in
+practical ways.
+
+### 1. The conversation can stay on the player's machine
+
+In the intended local setup, the frontend, API, SQLite database, and
+Ollama model run on the same computer. Player commands and
+conversational context are sent to the local API; the model inference
+request goes to the local Ollama service.
+
+There is no hosted proprietary LLM API in the conversation loop. The
+session database is a local SQLite file rather than a remote application
+database.
+
+This is a meaningful privacy property for an experience built around
+personal memories: the application does not need to send a player's
+questions to a third-party model provider.
+
+### 2. The model is replaceable
+
+The model name and Ollama host are environment configuration, not
+hard-coded throughout the story engine. A compatible model can be
+selected by changing `OLLAMA_MODEL` and pulling that model through
+Ollama.
+
+That makes experimentation possible without redesigning the
+deterministic investigation system.
+
+### 3. The application is inspectable
+
+The prompt, evidence supplied to the model, response constraints, and
+story progression are part of the repository. Developers can inspect how
+the entity is instructed to behave and change those decisions
+themselves.
+
+### 4. Local inference has trade-offs
+
+Local inference avoids a per-request hosted-model dependency, but it is
+not free of cost: it uses the player's own CPU, memory, and storage.
+Model downloads and initial dependency installation require an internet
+connection. Once installed, the local application and model can run
+without sending inference requests to a cloud LLM service.
+
+**Important distinction:** this is a locally run application, not a
+public website that secretly connects to each visitor's local Ollama
+instance. The frontend, API, database, and Ollama service must be
+running in the same local environment for the documented setup.
 
 ## Architecture
 
-Haunted Terminal uses a React frontend, an Express API, a deterministic story engine, SQLite persistence, and a locally running Ollama model.
-
-```mermaid
+``` mermaid
 flowchart TD
-    A[Player] --> B[React + Vite Frontend]
-    B --> C[Express API]
-    C --> D[Deterministic Story Engine]
-    D --> E[SQLite Database]
-    D --> F[Ollama Service]
-    F --> G[Open-weight Local Model]
-    D --> C
-    C --> B
-    B --> H[Interactive CRT Terminal]
+    U[Player] --> W[React 19 + Vite]
+    W -->|HTTP requests to localhost| A[Express 5 API]
+    A --> S[Deterministic Story Engine]
+    S --> R[Repositories]
+    R --> P[Prisma 7]
+    P --> DB[(Local SQLite database)]
+    S -->|whisper / ask| O[Ollama Service]
+    O --> M[Qwen 2.5 3B]
+    M --> O
+    O --> S
+    S --> A
+    A --> W
+    W --> AU[Browser Audio API]
 ```
 
-### How it works
+### Request lifecycle
 
-1. The player enters a command in the terminal.
-2. The frontend sends the command and session ID to the Express API.
-3. The deterministic story engine validates the command and checks investigation progress.
-4. Clue discoveries, conversation messages, session state, and terminal events are persisted in SQLite.
-5. When the player interacts with the entity using `whisper` or `ask`, the backend calls Ollama with the recovered evidence and recent conversation history.
-6. The generated response is returned to the terminal.
+1.  The frontend creates or restores a UUID session identifier and
+    stores it in browser `localStorage`.
+2.  The player submits a command. The frontend sends the command and
+    session ID to the Express API.
+3.  The story engine loads the session, discovered clues, and recent
+    conversation history from SQLite.
+4.  The engine validates the command and checks the required clue
+    dependencies.
+5.  For a story command, the engine returns a deterministic result. For
+    `whisper` or `ask`, it sends the recovered evidence and recent
+    history to Ollama.
+6.  Session changes, messages, discovered clues, and terminal events are
+    persisted through repository modules and Prisma.
+7.  The API returns the result and the frontend renders it in the
+    terminal.
 
-**Important:** The terminal is a simulated investigation interface. It does not execute arbitrary shell commands on the visitor's computer.
+### Persistence model
 
----
+The Prisma schema defines four related records:
 
-## Tech Stack
+  ---------------------------------------------------------------------
+  Model                              Purpose
+  ---------------------------------- ----------------------------------
+  `Session`                          Session status, selected ending,
+                                     and timestamps
 
-| Layer | Technologies |
-|---|---|
-| Frontend | React 19, Vite 8 |
-| Styling | Tailwind CSS v4, custom CSS |
-| Icons | Lucide React |
-| Backend | Node.js, Express 5 |
-| AI Runtime | Ollama |
-| AI Model | Qwen 2.5 3B (default configuration) |
-| Database | SQLite |
-| ORM | Prisma 7 |
-| Audio | HTML Audio API |
+  `DiscoveredClue`                   Clues recovered during a session
 
----
+  `ConversationMessage`              Player and entity conversation
+                                     turns
 
-## Project Structure
+  `TerminalEvent`                    Commands and rendered terminal
+                                     events used to restore the
+                                     interface
+  ---------------------------------------------------------------------
 
-```text
+A session is identified by a UUID. The frontend retains that identifier
+locally so it can request the saved session after a refresh.
+
+### API endpoints
+
+  Method   Endpoint                     Purpose
+  -------- ---------------------------- ------------------------------
+  `GET`    `/api/health`                Checks API availability
+  `POST`   `/api/terminal/command`      Processes a terminal command
+  `GET`    `/api/sessions/:sessionId`   Restores a saved session
+
+Example command request:
+
+``` json
+{
+  "command": "scan",
+  "sessionId": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+}
+```
+
+The API validates the command and UUID session ID, rejects commands
+longer than 500 characters, and rate-limits terminal command requests to
+10 per minute.
+
+## Tech stack
+
+  Layer               Technology
+  ------------------- ------------------------------------------
+  Frontend            React 19, Vite 8
+  Styling             Tailwind CSS v4, custom CSS
+  Icons               Lucide React
+  Backend             Node.js, Express 5
+  AI runtime          Ollama
+  Default model       Qwen 2.5 3B
+  Database            SQLite
+  ORM / data access   Prisma 7 with the Better SQLite3 adapter
+  Audio               Browser HTML Audio API
+
+## Project structure
+
+``` text
 haunted_terminal/
-│
 └── apps/
     ├── api/
     │   ├── prisma/
     │   │   ├── migrations/
     │   │   └── schema.prisma
-    │   │
     │   ├── src/
     │   │   ├── config/
     │   │   ├── data/
@@ -155,10 +464,9 @@ haunted_terminal/
     │   │   ├── routes/
     │   │   ├── services/
     │   │   └── server.js
-    │   │
     │   ├── .env.example
-    │   └── package.json
-    │
+    │   ├── package.json
+    │   └── prisma.config.js
     └── web/
         ├── public/
         │   └── audio/
@@ -170,45 +478,83 @@ haunted_terminal/
         │   ├── App.css
         │   ├── index.css
         │   └── main.jsx
-        │
         ├── .env.example
         ├── index.html
-        ├── vite.config.js
-        └── package.json
+        ├── package.json
+        └── vite.config.js
 ```
 
----
+## Run it locally
 
-## Getting Started
+The application is designed to run locally. You will run the API,
+Ollama, and the Vite frontend on the same computer.
 
 ### Prerequisites
 
-Install the following:
+-   [Node.js](https://nodejs.org/) (use a current LTS release)
+-   npm (included with Node.js)
+-   [Ollama](https://ollama.com/)
+-   Git
 
-- [Node.js](https://nodejs.org/)
-- [npm](https://www.npmjs.com/)
-- [Ollama](https://ollama.com/)
-- Git
+The default model is Qwen 2.5 3B. Its download size and inference speed
+depend on your system.
 
 ### 1. Clone the repository
 
-```bash
+``` bash
 git clone https://github.com/Kunal13Kashyap/haunted_terminal.git
-
 cd haunted_terminal
 ```
 
-### 2. Set up the backend
+### 2. Download the model
 
-```bash
+Install Ollama, then pull the default model:
+
+``` bash
+ollama pull qwen2.5:3b
+```
+
+Make sure the Ollama service is running. On systems where it is not
+already running as a background service, start it in a terminal:
+
+``` bash
+ollama serve
+```
+
+The default Ollama endpoint is:
+
+``` text
+http://127.0.0.1:11434
+```
+
+Keep Ollama running while you play.
+
+### 3. Configure and start the API
+
+Open a terminal in the repository:
+
+``` bash
 cd apps/api
-
 npm install
 ```
 
-Create a `.env` file using `.env.example` as a reference.
+Create a `.env` file in `apps/api` by copying `.env.example`.
 
-```env
+**Windows PowerShell:**
+
+``` powershell
+Copy-Item .env.example .env
+```
+
+**macOS / Linux:**
+
+``` bash
+cp .env.example .env
+```
+
+The default configuration is:
+
+``` env
 PORT=3000
 WEB_ORIGIN=http://localhost:5173
 
@@ -221,188 +567,244 @@ MAX_RESPONSE_WORDS=65
 MIN_RESPONSE_DELAY=3000
 ```
 
-Generate the Prisma client and apply database migrations:
+Generate the Prisma client and apply the committed migrations:
 
-```bash
+``` bash
 npx prisma generate
 npx prisma migrate deploy
 ```
 
-### 3. Set up Ollama
+Start the API:
 
-Download and run the default model:
-
-```bash
-ollama pull qwen2.5:3b
-```
-
-Make sure the Ollama service is running and accessible at:
-
-```text
-http://127.0.0.1:11434
-```
-
-If Ollama is not already running as a background service, start it using:
-
-```bash
-ollama serve
-```
-
-### 4. Start the backend
-
-From `apps/api`:
-
-```bash
+``` bash
 npm run dev
 ```
 
-The API runs at:
+The API listens on:
 
-```text
-http://localhost:3000
+``` text
+http://127.0.0.1:3000
 ```
 
-Health check:
+You can check that it is running by opening:
 
-```text
-http://localhost:3000/api/health
+``` text
+http://127.0.0.1:3000/api/health
 ```
 
-### 5. Set up the frontend
+A successful response looks like:
 
-Open another terminal:
+``` json
+{
+  "status": "ok",
+  "app": "Haunted Terminal API"
+}
+```
 
-```bash
+### 4. Configure and start the frontend
+
+Open a **second terminal** from the repository root:
+
+``` bash
 cd apps/web
-
 npm install
 ```
 
-Create a `.env` file using `.env.example`:
+Create `.env` from `.env.example`.
 
-```env
+**Windows PowerShell:**
+
+``` powershell
+Copy-Item .env.example .env
+```
+
+**macOS / Linux:**
+
+``` bash
+cp .env.example .env
+```
+
+The default frontend configuration is:
+
+``` env
 VITE_API_BASE_URL=http://localhost:3000
 VITE_MIN_RESPONSE_DELAY=3000
 ```
 
-Start the development server:
+Start Vite:
 
-```bash
+``` bash
 npm run dev
 ```
 
-Open the local URL printed by Vite, normally:
+Open the local URL printed by Vite, usually:
 
-```text
+``` text
 http://localhost:5173
 ```
 
----
+### 5. Start investigating
 
-## Environment Variables
+Make sure all three processes are running:
 
-### Backend — `apps/api/.env`
+-   Ollama
+-   Express API
+-   Vite frontend
 
-| Variable | Description | Default |
-|---|---|---|
-| `PORT` | API server port | `3000` |
-| `WEB_ORIGIN` | Frontend origin allowed by CORS | `http://localhost:5173` |
-| `DATABASE_URL` | SQLite database connection | Required |
-| `OLLAMA_HOST` | Ollama server URL | `http://127.0.0.1:11434` |
-| `OLLAMA_MODEL` | Model used for entity responses | `qwen2.5:3b` |
-| `MAX_RESPONSE_WORDS` | Maximum response length | `65` |
-| `MIN_RESPONSE_DELAY` | Minimum delay for predefined responses, in milliseconds | `3000` |
+Enable audio from the interface if you want the ambient sound layers.
+Then type `help` in the terminal and begin with `scan`.
 
-### Frontend — `apps/web/.env`
+## Configuration
 
-| Variable | Description | Default |
-|---|---|---|
-| `VITE_API_BASE_URL` | Backend API base URL | Required |
-| `VITE_MIN_RESPONSE_DELAY` | Minimum delay for predefined terminal responses, in milliseconds | `3000` |
+### API --- `apps/api/.env`
+
+  -----------------------------------------------------------------------------------
+  Variable                        Required Default                    Description
+  ---------------------- ----------------- -------------------------- ---------------
+  `PORT`                                No `3000`                     Local API port
+
+  `WEB_ORIGIN`                          No `http://localhost:5173`    Frontend origin
+                                                                      allowed by CORS
+
+  `DATABASE_URL`                       Yes ---                        SQLite database
+                                                                      URL
+
+  `OLLAMA_HOST`                         No `http://127.0.0.1:11434`   Ollama service
+                                                                      URL
+
+  `OLLAMA_MODEL`                        No `qwen2.5:3b`               Model tag used
+                                                                      for entity
+                                                                      responses
+
+  `MAX_RESPONSE_WORDS`                  No `65`                       Maximum
+                                                                      generated
+                                                                      response length
+
+  `MIN_RESPONSE_DELAY`                  No `3000`                     Minimum delay
+                                                                      for
+                                                                      deterministic
+                                                                      terminal
+                                                                      responses, in
+                                                                      milliseconds
+  -----------------------------------------------------------------------------------
+
+### Frontend --- `apps/web/.env`
+
+  -----------------------------------------------------------------------------
+  Variable                              Required Default        Description
+  --------------------------- ------------------ -------------- ---------------
+  `VITE_API_BASE_URL`                        Yes ---            Base URL for
+                                                                the API
+
+  `VITE_MIN_RESPONSE_DELAY`                   No `3000`         Minimum delay
+                                                                for
+                                                                deterministic
+                                                                terminal
+                                                                responses, in
+                                                                milliseconds
+  -----------------------------------------------------------------------------
 
 Do not commit real `.env` files or private credentials.
 
----
+## Safety and privacy boundaries
 
-## API Endpoints
+Haunted Terminal is a fictional terminal simulation, not a shell
+emulator.
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| `GET` | `/api/health` | Check API availability |
-| `POST` | `/api/terminal/command` | Process a terminal command |
-| `GET` | `/api/sessions/:sessionId` | Retrieve a saved investigation session |
+-   Commands are matched against the game's supported command set. They
+    are not passed to `cmd.exe`, PowerShell, Bash, or another system
+    shell.
+-   The application does not scan the visitor's real files, inspect
+    running processes, or access personal documents.
+-   The LLM receives story evidence and a limited conversation history,
+    not arbitrary access to the host computer.
+-   The deterministic engine controls clue discovery and endings; model
+    output cannot directly change story state.
+-   The API applies a 10-requests-per-minute limit to terminal command
+    requests.
+-   In the documented local setup, the database and model inference run
+    on the same machine as the application.
 
-The terminal command endpoint accepts a command and a UUID session ID.
+The local setup is intended for individual use. The API is bound to
+`127.0.0.1` and the CORS origin is configured for the local frontend. It
+is not configured as a public multi-user service.
 
-Example request:
+## Limitations
 
-```json
-{
-  "command": "scan",
-  "sessionId": "your-session-uuid"
-}
-```
+-   The first setup requires internet access to install dependencies and
+    download the model.
+-   Local inference speed depends on the machine's CPU and available
+    memory. The current Ollama request is configured for CPU inference.
+-   The model must be installed and Ollama must be running for `whisper`
+    and `ask` responses.
+-   The story engine supports a fixed set of commands; it does not
+    accept arbitrary shell instructions.
+-   Session identifiers are stored in browser `localStorage`. Clearing
+    site data removes the browser's reference to the saved session,
+    although the SQLite record may remain.
+-   This repository documents a local application setup; it does not
+    provide a hosted public deployment.
 
----
+## Built for Hacktoberfest 2026 --- Week 4
 
-## Safety and Design Decisions
+**Challenge:** [Ghost in the Machine --- Hacktoberfest Open-Source AI
+Challenge](https://dev.to/challenges/hacktoberfest-week4-2026-10-26)
 
-- Player commands are interpreted by the game's command engine; they are not passed to the operating system shell.
-- The AI receives recovered evidence and limited conversation history to maintain narrative consistency.
-- The AI is instructed not to invent undiscovered clues or claim to have accessed the visitor's real files.
-- Terminal commands are rate-limited by the API.
-- Audio playback requires an explicit visitor interaction.
+The challenge asks builders to put open-source AI or open-weight models
+at the core of a new project, interpret the Ghost in the Machine theme,
+and explain why open innovation matters.
 
----
+Haunted Terminal approaches that prompt through the idea of a machine
+that has retained fragments of a person. The model is not a decorative
+chatbot added to a horror interface: it is the voice of the
+reconstructed entity. At the same time, deterministic application logic
+preserves the integrity of the mystery.
 
-## Hacktoberfest — Week 4: Ghost in the Machine
+The project explores three ideas:
 
-Haunted Terminal was built for the **Ghost in the Machine** challenge, exploring open-source AI as a core part of an interactive project.
+1.  **Memory is not identity.** The archive can reproduce fragments of a
+    voice without proving that the person survived.
+2.  **Open models make the experience inspectable and adaptable.** The
+    model, prompt, runtime, and local inference path can be examined and
+    changed.
+3.  **Local-first AI can reduce unnecessary data sharing.** In the
+    documented setup, conversations are processed by a model running on
+    the player's own machine rather than sent to a hosted LLM API.
 
-Open-weight models and local inference make it possible to build AI-powered experiences without depending on a hosted proprietary language-model API for every interaction.
-
-In this project, the open model is not merely an optional chatbot. It gives the reconstructed entity its conversational personality, while the deterministic story engine controls the actual investigation, evidence, progression, and endings.
-
-The combination makes the experience both interactive and grounded in a controlled narrative.
-
----
-
-## Roadmap
-
-- [x] Interactive terminal interface
-- [x] Deterministic investigation and clue progression
-- [x] Ollama-powered entity conversations
-- [x] SQLite-backed session persistence
-- [x] Multiple story endings
-- [x] CRT workstation visual design
-- [x] Ambient audio
-- [ ] Public deployment
-- [ ] Complete architecture and deployment documentation
-- [ ] Demo video and walkthrough
-
----
+The result is a small interactive narrative about the boundary between
+remembering someone and being that person.
 
 ## Acknowledgements
 
-- [Ollama](https://ollama.com/) — local model runtime.
-- [Qwen](https://github.com/QwenLM/Qwen2.5) — open-weight language model family.
-- [React](https://react.dev/) — frontend library.
-- [Vite](https://vite.dev/) — frontend tooling.
-- [Prisma](https://www.prisma.io/) — database ORM.
-- [Lucide](https://lucide.dev/) — icon library.
+-   [Ollama](https://ollama.com/) --- local model runtime.
+-   [Qwen 2.5](https://github.com/QwenLM/Qwen2.5) --- open-weight model
+    family used for the entity.
+-   [React](https://react.dev/) --- frontend library.
+-   [Vite](https://vite.dev/) --- frontend tooling.
+-   [Express](https://expressjs.com/) --- API framework.
+-   [Prisma](https://www.prisma.io/) --- database toolkit.
+-   [SQLite](https://sqlite.org/) --- embedded database.
+-   [Lucide](https://lucide.dev/) --- icon library.
 
-Audio recording credits and their applicable licenses will be listed here after final source and license verification.
+## Post-deadline documentation note
 
----
+This README and its accompanying screenshot documentation were prepared
+on **November 1, 2026**, after the Week 4 submission deadline. This is a
+documentation update; it does not claim additional gameplay or
+application features beyond the implementation described above.
 
 ## Author
 
 **Kunal Kashyap**
 
-- GitHub: [@Kunal13Kashyap](https://github.com/Kunal13Kashyap)
-- Project: [Haunted Terminal](https://github.com/Kunal13Kashyap/haunted_terminal)
+-   GitHub: [@Kunal13Kashyap](https://github.com/Kunal13Kashyap)
+-   Repository:
+    [Kunal13Kashyap/haunted_terminal](https://github.com/Kunal13Kashyap/haunted_terminal)
 
----
+------------------------------------------------------------------------
 
-*The process was terminated. The archive remains active.*  
-*Infrastructure #674 — connection still open.*
+::: {align="center"}
+*The process was terminated. The archive remains active.*
+
+**INFRASTRUCTURE #674 --- CONNECTION STILL OPEN.**
+:::
