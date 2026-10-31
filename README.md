@@ -8,10 +8,6 @@ An interactive, AI-powered horror experience about a forgotten
 experiment, fragmented memories, and an entity that may not understand
 what it is.
 
-[![Hacktoberfest
-2026](https://img.shields.io/badge/Hacktoberfest-2026-orange?style=flat-square)](https://dev.to/challenges/hacktoberfest-week4-2026-10-26)
-[![Week
-4](https://img.shields.io/badge/DEV_Challenge-Week_4-7c3aed?style=flat-square)](https://dev.to/challenges/hacktoberfest-week4-2026-10-26)
 [![React](https://img.shields.io/badge/React-19-149eca?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-ESM-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Ollama](https://img.shields.io/badge/AI-Ollama-black?style=flat-square)](https://ollama.com/)
@@ -19,7 +15,7 @@ what it is.
 
 ------------------------------------------------------------------------
 
-## The experience
+## Overview
 
 An abandoned computer has awakened.
 
@@ -70,9 +66,9 @@ subtle entity eyes, and ambient horror audio.
 
 *Terminate — nothing answers from the other side of the cursor.*
 
-## What makes it interactive?
+## Features and design
 
-Haunted Terminal combines two deliberately different systems:
+Haunted Terminal combines a deterministic story engine with a locally run language model:
 
 -   **A deterministic narrative engine** controls commands, clue
     requirements, session state, and endings. Story-critical progression
@@ -681,35 +677,6 @@ is not configured as a public multi-user service.
 -   This repository documents a local application setup; it does not
     provide a hosted public deployment.
 
-## Built for Hacktoberfest 2026 --- Week 4
-
-**Challenge:** [Ghost in the Machine --- Hacktoberfest Open-Source AI
-Challenge](https://dev.to/challenges/hacktoberfest-week4-2026-10-26)
-
-The challenge asks builders to put open-source AI or open-weight models
-at the core of a new project, interpret the Ghost in the Machine theme,
-and explain why open innovation matters.
-
-Haunted Terminal approaches that prompt through the idea of a machine
-that has retained fragments of a person. The model is not a decorative
-chatbot added to a horror interface: it is the voice of the
-reconstructed entity. At the same time, deterministic application logic
-preserves the integrity of the mystery.
-
-The project explores three ideas:
-
-1.  **Memory is not identity.** The archive can reproduce fragments of a
-    voice without proving that the person survived.
-2.  **Open models make the experience inspectable and adaptable.** The
-    model, prompt, runtime, and local inference path can be examined and
-    changed.
-3.  **Local-first AI can reduce unnecessary data sharing.** In the
-    documented setup, conversations are processed by a model running on
-    the player's own machine rather than sent to a hosted LLM API.
-
-The result is a small interactive narrative about the boundary between
-remembering someone and being that person.
-
 ## Acknowledgements
 
 -   [Ollama](https://ollama.com/) --- local model runtime.
@@ -730,10 +697,3 @@ remembering someone and being that person.
 -   Repository:
     [Kunal13Kashyap/haunted_terminal](https://github.com/Kunal13Kashyap/haunted_terminal)
 
-------------------------------------------------------------------------
-
-:::
-*The process was terminated. The archive remains active.*
-
-**INFRASTRUCTURE #674 --- CONNECTION STILL OPEN.**
-:::
