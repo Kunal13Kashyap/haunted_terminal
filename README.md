@@ -1,4 +1,3 @@
-::: {align="center"}
 # 👻 Haunted Terminal
 
 ### INFRASTRUCTURE #674 --- The Last Process
@@ -17,7 +16,6 @@ what it is.
 [![Node.js](https://img.shields.io/badge/Node.js-ESM-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Ollama](https://img.shields.io/badge/AI-Ollama-black?style=flat-square)](https://ollama.com/)
 [![SQLite](https://img.shields.io/badge/Database-SQLite-003b57?style=flat-square&logo=sqlite&logoColor=white)](https://sqlite.org/)
-:::
 
 ------------------------------------------------------------------------
 
@@ -48,65 +46,30 @@ The interface is designed as a fictional CRT workstation: a
 phosphor-green terminal, a physical keyboard, restrained warning colors,
 subtle entity eyes, and ambient horror audio.
 
-```{=html}
-<p align="center">
-```
-`<img src="docs/screenshots/01-boot-sequence.png" alt="Haunted Terminal boot sequence showing Infrastructure 674 and the unauthorized access warning" width="100%">`{=html}
-`<em>`{=html}System initialization --- the entity is already
-inside.`</em>`{=html}
+![Haunted Terminal boot sequence showing Infrastructure 674 and the unauthorized access warning](docs/screenshots/01-boot-sequence.png)
 
-```{=html}
-</p>
-```
-```{=html}
-<p align="center">
-```
-`<img src="docs/screenshots/02-terminal-and-command-help.png" alt="Haunted Terminal command help and investigation interface" width="100%">`{=html}
-`<em>`{=html}The terminal is the interface to the
-investigation.`</em>`{=html}
+*System initialization — the entity is already inside.*
 
-```{=html}
-</p>
-```
-```{=html}
-<p align="center">
-```
-`<img src="docs/screenshots/03-scan-and-entity-response.png" alt="The player recovers the unknown process clue and receives a response from the entity" width="100%">`{=html}
-`<em>`{=html}The first anomaly is recovered. The entity begins to
-respond.`</em>`{=html}
+![Haunted Terminal command help and investigation interface](docs/screenshots/02-terminal-and-command-help.png)
 
-```{=html}
-</p>
-```
-```{=html}
-<p align="center">
-```
-`<img src="docs/screenshots/04-investigation-clue-gating.png" alt="An investigation command is blocked until the required shutdown log clue is recovered" width="100%">`{=html}
-`<em>`{=html}Progression is evidence-gated: the records must be
-recovered in order.`</em>`{=html}
+*The terminal is the interface to the investigation.*
 
-```{=html}
-</p>
-```
-```{=html}
-<p align="center">
-```
-`<img src="docs/screenshots/05-preserve-ending.png" alt="Preservation ending: the archive remains active and the investigation closes" width="100%">`{=html}
-`<em>`{=html}Preserve --- the archive remains active.`</em>`{=html}
+![The player recovers the unknown process clue and receives a response from the entity](docs/screenshots/03-scan-and-entity-response.png)
 
-```{=html}
-</p>
-```
-```{=html}
-<p align="center">
-```
-`<img src="docs/screenshots/06-terminate-ending.png" alt="Termination ending: the process shuts down and the investigation closes" width="100%">`{=html}
-`<em>`{=html}Terminate --- nothing answers from the other side of the
-cursor.`</em>`{=html}
+*The first anomaly is recovered. The entity begins to respond.*
 
-```{=html}
-</p>
-```
+![An investigation command is blocked until the required shutdown log clue is recovered](docs/screenshots/04-investigation-clue-gating.png)
+
+*Progression is evidence-gated: the records must be recovered in order.*
+
+![Preservation ending: the archive remains active and the investigation closes](docs/screenshots/05-preserve-ending.png)
+
+*Preserve — the archive remains active.*
+
+![Termination ending: the process shuts down and the investigation closes](docs/screenshots/06-terminate-ending.png)
+
+*Terminate — nothing answers from the other side of the cursor.*
+
 ## What makes it interactive?
 
 Haunted Terminal combines two deliberately different systems:
@@ -656,53 +619,26 @@ Then type `help` in the terminal and begin with `scan`.
 
 ## Configuration
 
-### API --- `apps/api/.env`
+Create the environment files from the supplied `.env.example` files.
 
-  -----------------------------------------------------------------------------------
-  Variable                        Required Default                    Description
-  ---------------------- ----------------- -------------------------- ---------------
-  `PORT`                                No `3000`                     Local API port
+### API — `apps/api/.env`
 
-  `WEB_ORIGIN`                          No `http://localhost:5173`    Frontend origin
-                                                                      allowed by CORS
+| Variable | Description |
+|---|---|
+| `PORT` | Local API port. Default: `3000`. |
+| `WEB_ORIGIN` | Frontend origin allowed by CORS. Default: `http://localhost:5173`. |
+| `DATABASE_URL` | SQLite database URL. Required; use `file:./dev.db`. |
+| `OLLAMA_HOST` | Ollama service URL. Default: `http://127.0.0.1:11434`. |
+| `OLLAMA_MODEL` | Model tag used for entity responses. Default: `qwen2.5:3b`. |
+| `MAX_RESPONSE_WORDS` | Maximum generated response length. Default: `65`. |
+| `MIN_RESPONSE_DELAY` | Minimum delay for deterministic terminal responses, in milliseconds. Default: `3000`. |
 
-  `DATABASE_URL`                       Yes ---                        SQLite database
-                                                                      URL
+### Frontend — `apps/web/.env`
 
-  `OLLAMA_HOST`                         No `http://127.0.0.1:11434`   Ollama service
-                                                                      URL
-
-  `OLLAMA_MODEL`                        No `qwen2.5:3b`               Model tag used
-                                                                      for entity
-                                                                      responses
-
-  `MAX_RESPONSE_WORDS`                  No `65`                       Maximum
-                                                                      generated
-                                                                      response length
-
-  `MIN_RESPONSE_DELAY`                  No `3000`                     Minimum delay
-                                                                      for
-                                                                      deterministic
-                                                                      terminal
-                                                                      responses, in
-                                                                      milliseconds
-  -----------------------------------------------------------------------------------
-
-### Frontend --- `apps/web/.env`
-
-  -----------------------------------------------------------------------------
-  Variable                              Required Default        Description
-  --------------------------- ------------------ -------------- ---------------
-  `VITE_API_BASE_URL`                        Yes ---            Base URL for
-                                                                the API
-
-  `VITE_MIN_RESPONSE_DELAY`                   No `3000`         Minimum delay
-                                                                for
-                                                                deterministic
-                                                                terminal
-                                                                responses, in
-                                                                milliseconds
-  -----------------------------------------------------------------------------
+| Variable | Description |
+|---|---|
+| `VITE_API_BASE_URL` | Base URL for the API. Required; local default: `http://localhost:3000`. |
+| `VITE_MIN_RESPONSE_DELAY` | Minimum delay for deterministic terminal responses, in milliseconds. Default: `3000`. |
 
 Do not commit real `.env` files or private credentials.
 
@@ -786,13 +722,6 @@ remembering someone and being that person.
 -   [SQLite](https://sqlite.org/) --- embedded database.
 -   [Lucide](https://lucide.dev/) --- icon library.
 
-## Post-deadline documentation note
-
-This README and its accompanying screenshot documentation were prepared
-on **November 1, 2026**, after the Week 4 submission deadline. This is a
-documentation update; it does not claim additional gameplay or
-application features beyond the implementation described above.
-
 ## Author
 
 **Kunal Kashyap**
@@ -803,7 +732,7 @@ application features beyond the implementation described above.
 
 ------------------------------------------------------------------------
 
-::: {align="center"}
+:::
 *The process was terminated. The archive remains active.*
 
 **INFRASTRUCTURE #674 --- CONNECTION STILL OPEN.**
