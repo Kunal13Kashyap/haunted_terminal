@@ -143,6 +143,7 @@ unavailable until their prerequisite clues have been recovered.
   `clear`                            Clears the visible terminal output
 
   `exit`                             Ends the current session
+  
   ---------------------------------------------------------------------
 
 ### The investigation path
@@ -150,31 +151,31 @@ unavailable until their prerequisite clues have been recovered.
 ``` text
                  ┌──────────────┐
                  │     scan     │
-                 │ Unknown      │
-                 │ process      │
+                 │    Unknown   │
+                 │    process   │
                  └──────┬───────┘
                         │
                  ┌──────▼───────┐
                  │     logs     │
-                 │ Shutdown     │
-                 │ warning      │
+                 │   Shutdown   │
+                 │   warning    │
                  └──────┬───────┘
                         │
                  ┌──────▼───────┐
                  │  investigate │
-                 │ Deleted      │
-                 │ identity     │
+                 │    Deleted   │
+                 │   identity   │
                  └──────┬───────┘
                         │
                  ┌──────▼───────┐
-                 │ reconstruct  │
+                 │  reconstruct │
                  │ Contradictory│
-                 │ records      │
+                 │   records    │
                  └──────┬───────┘
                         │
               ┌─────────▼─────────┐
               │      reveal       │
-              │ Final decision    │
+              │  Final decision   │
               └─────┬─────┬───────┘
                     │     │
           ┌─────────┘     └──────────┐
@@ -215,19 +216,12 @@ fiction.
 
 ### Three awareness stages
 
-  -----------------------------------------------------------------------
-  Stage                   Trigger                 Behaviour
-  ----------------------- ----------------------- -----------------------
-  `DORMANT`               Fewer than two core     Barely aware; cautious
-                          clues                   and uncertain
-
-  `AWARE`                 At least two clues      Recognizes recovered
-                                                  records, but cannot
-                                                  resolve every mystery
-
-  `EXPOSED`               At least four clues     Understands the
-                                                  contradictions and
-                                                  reacts more personally
+| Stage | Trigger | Behaviour |
+|:---|:---|:---|
+| `DORMANT` | Fewer than two core clues | Barely aware; cautious and uncertain |
+| `AWARE` | At least two clues | Recognizes recovered records, but cannot resolve every mystery |
+| `EXPOSED` | At least four clues | Understands the contradictions and reacts more personally |
+                                                  
   -----------------------------------------------------------------------
 
 The model is explicitly instructed to distinguish fact from uncertainty.
@@ -366,6 +360,7 @@ The Prisma schema defines four related records:
   `TerminalEvent`                    Commands and rendered terminal
                                      events used to restore the
                                      interface
+                                     
   ---------------------------------------------------------------------
 
 A session is identified by a UUID. The frontend retains that identifier
